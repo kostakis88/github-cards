@@ -1,14 +1,13 @@
-import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react'
+import React, { useState, ChangeEvent, KeyboardEvent } from 'react'
 import User from './../UserInterface'
 
 interface SearchFieldProps {
-  setDataFromGithub: (data: User | undefined) => void
+  setDataFromGithub: (data: User) => void
 }
 
 const SearchField: React.FC<SearchFieldProps> = (props) => {
   const { setDataFromGithub } = props
   const [value, setValue] = useState('')
-  const [githubData, setGithubData] = useState<User | undefined>(undefined)
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setValue(event.target.value)
@@ -18,14 +17,11 @@ const SearchField: React.FC<SearchFieldProps> = (props) => {
     if (event.key === 'Enter') {
       fetch('https://api.github.com/users/' + value)
         .then(response => response.json())
-        .then(data => setGithubData(data))
+        .then(data => setDataFromGithub(data))
+        .catch(error => console.error('There was an error!', error))
       setValue('')
     }
   }
-
-  useEffect(() => {
-    setDataFromGithub(githubData)
-  },[setDataFromGithub, githubData])
 
   return (
     <div className='search-field-wrapper'>
